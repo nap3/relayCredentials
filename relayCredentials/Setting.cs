@@ -14,19 +14,34 @@ namespace relayCredentials
         public static string ProxyPassword { get { return _info.ProxyPassword; } }
         public static string[] ProxyBypassList { get { return _info.BypassList; } }
 
-		public static string SettingFilePath
-		{
-			get
-			{
+        /// <summary>
+        /// 設定ファイルのパス
+        /// </summary>
+        public static string SettingFilePath
+        {
+            get
+            {
                 var c = ConfigurationManager.AppSettings.Get("relayCredentialsConfigPath");
-			    if (string.IsNullOrEmpty(c))
-			    {
-			        c = @".\relayCredentialsSetting.xml";
-			    }
+                if (string.IsNullOrEmpty(c))
+                {
+                    c = @".\relayCredentialsSetting.xml";
+                }
 
                 return Path.GetFullPath(c);
-			}
-		}
+            }
+        }
+
+        /// <summary>
+        /// ログの出力先（今のところデバッグ専用）
+        /// </summary>
+        public static string LogFilePath
+        {
+            get
+            {
+                var directory = Path.GetDirectoryName(Setting.SettingFilePath) ?? string.Empty;
+                return Path.Combine(directory, "relayCredentialsLog.txt");
+            }
+        }
 
         private static SettingInfo _info = new SettingInfo();
 
@@ -45,7 +60,6 @@ namespace relayCredentials
         {
             _info.Clear();
         }
-
 
         /// <summary>
         /// 設定ファイルから設定値を読み込む
