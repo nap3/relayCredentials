@@ -1,8 +1,7 @@
-﻿# relayCredentials
+# relayCredentials
+アプリケーションのプロキシ認証情報を中継するモジュール。
 ====
 
-##Overview
-アプリケーションのプロキシ認証情報を中継するモジュール。
 
 
 ## Description
@@ -38,7 +37,7 @@ app.configの修正箇所
       <module type="relayCredentials.AuthProxyModule, relayCredentials"/>
     </defaultProxy>
   </system.net>
-```xml
+```
 
 
 
@@ -57,9 +56,9 @@ app.configの修正箇所
 ---------------------------
 ## Thanks
 
-Rido氏の*How to connect to TFS through authenticated Web Proxy*という記事に書かれているRido.AuthProxyからヒントをもらっています。
-このブログのおかげで、defaultProxy-module 要素の使い方を理解することができました。
-
+Rido氏の*How to connect to TFS through authenticated Web Proxy*という記事に書かれているRido.AuthProxyからヒントをもらいました。     
+このブログのおかげで、defaultProxy-module 要素の使い方を理解することができました。     
+ありがとうございました。
 
 ## Reference
 
