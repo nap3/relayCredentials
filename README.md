@@ -15,11 +15,11 @@
 
 ##Requirement
 
-.Net Framework 2.0
-Visual C# 2010(if build this project.)
+* .Net Framework 2.0 or higher version     
+* Visual C# 2010(If build this project.)
 
 
-## Usage
+## Usage     
 1. 認証情報を中継したいアプリケーションのapp.config（Excelの場合、Excel.config）に以下のコードを追加します。  
 （app.configが存在しない場合は新しいファイルを作成します。）
 1. relayCredentialsSetting.xmlに中継するプロキシサーバー名と認証情報を書き込みます。
