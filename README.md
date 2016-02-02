@@ -52,7 +52,7 @@ app.configの修正箇所
 ---------------------------
 ## Thanks
 
-Rido氏の [How to connect to TFS through authenticated Web Proxy](http://blogs.msdn.com/b/rido/archive/2010/05/06/how-to-connect-to-tfs-through-authenticated-web-proxy.aspx) という記事に書かれているRido.AuthProxyからヒントをもらいました。     
+Rido氏の [How to connect to TFS through authenticated Web Proxy](http://blogs.msdn.com/b/rido/archive/2010/05/06/how-to-connect-to-tfs-through-authenticated-web-proxy.aspx) という記事に書かれているRido.AuthProxyからヒントをもらいました。
 このブログのおかげで、defaultProxy-module 要素の使い方を理解することができました。     
 ありがとうございました。
 
