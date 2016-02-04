@@ -28,12 +28,10 @@
 ##confirmed
 
 APP|result
--|-
+:--|:--
 Excel 2016|X
 Excel 2013|OK
 Visual Studio 2015|OK
-
-
 
 
 app.configの修正箇所
