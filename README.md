@@ -41,7 +41,7 @@ app.configの修正箇所
 ##confirmed
 
 App|Operation
-:--|:--
+:--|:--:
 Excel 2016|X
 Excel 2013|OK
 Visual Studio 2015|OK
