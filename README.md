@@ -25,6 +25,16 @@
 1. relayCredentialsSetting.xmlに中継するプロキシサーバー名と認証情報を書き込みます。
 1. 認証情報を中継したいアプリケーションと同じ場所にrelayCredentialsSetting.dll、relayCredentialsSetting.xmlを配置します。
 
+##confirmed
+
+APP|result
+-|-
+Excel 2016|X
+Excel 2013|OK
+Visual Studio 2015|OK
+
+
+
 
 app.configの修正箇所
 
