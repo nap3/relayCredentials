@@ -40,7 +40,7 @@ app.configの修正箇所
 
 ##confirmed
 
-APP|result
+App|Operation
 :--|:--
 Excel 2016|X
 Excel 2013|OK
