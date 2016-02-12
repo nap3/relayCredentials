@@ -55,6 +55,7 @@ namespace relayCredentials.Utility
         /// 強制的にログ出力する。
         /// </summary>
         /// <param name="path">ファイル名も含めたフルパスを指定する。</param>
+        /// <param name="str">ログに出力する文字列</param>
         public static void ForceWrite(string path, string str)
         {
             //メソッド名の取得処理がずれるのであえてラップする。

@@ -83,6 +83,7 @@ namespace relayCredentials
         {
             if (!File.Exists(Setting.SettingFilePath)|| !string.IsNullOrEmpty(Setting.ProxyServer))
             {
+				Log.Write(Log.Level.Full, "Setting.SettingFilePath=" + Setting.SettingFilePath + "Setting.ProxyServer=" + Setting.ProxyServer);
                 return;
             }
 
