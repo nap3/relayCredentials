@@ -1,17 +1,43 @@
 ﻿using System;
 using System.IO;
 using System.Configuration;
+using System.Security.Cryptography;
+using System.Threading;
+using relayCredentials.Utility;
 
 namespace relayCredentials
 {
-	public class Setting
+    public class Setting
     {
         private const bool EMBED_BOM = true;
+        private static SettingInfo _info = new SettingInfo();
 
         public static int SettingVersion { get { return _info.SettingVersion; } }
         public static string ProxyServer { get { return _info.ProxyServer; } }
         public static string ProxyUser { get { return _info.ProxyUser; } }
-        public static string ProxyPassword { get { return _info.ProxyPassword; } }
+
+
+        public static string ProxyPassword
+        {
+            get
+            {
+                var pass = _info.ProxyPassword;
+                if (!string .IsNullOrEmpty(_info.EncryptedProxyPassword))
+                {
+                    try
+                    {
+                        var rsa = new CipherRsa(_info.KeyContainerName);
+                        pass = rsa.Decrypt(_info.EncryptedProxyPassword);
+                    }
+                    catch (CryptographicException)
+                    {
+                        Log.Write(Log.Level.Error, "Proxyパスワードの復号に失敗");
+                    }
+                }
+                return pass;
+            }
+        }
+
         public static string[] ProxyBypassList { get { return _info.BypassList; } }
 
         /// <summary>
@@ -31,19 +57,7 @@ namespace relayCredentials
             }
         }
 
-        /// <summary>
-        /// ログの出力先（今のところデバッグ専用）
-        /// </summary>
-        public static string LogFilePath
-        {
-            get
-            {
-                var directory = Path.GetDirectoryName(Setting.SettingFilePath) ?? string.Empty;
-                return Path.Combine(directory, "relayCredentialsLog.txt");
-            }
-        }
 
-        private static SettingInfo _info = new SettingInfo();
 
         /// <summary>
         /// コンストラクタ
@@ -51,6 +65,7 @@ namespace relayCredentials
         static Setting()
         {
             Reload();
+            Log.Write(Log.Level.Full, "**************** Settingコンストラクタ ****************");
         }
 
         /// <summary>
@@ -62,22 +77,51 @@ namespace relayCredentials
         }
 
         /// <summary>
-        /// 設定ファイルから設定値を読み込む
+        /// ProxyServerが設定されていない場合に設定ファイルから設定値を読み込む。（設定を変えたいときは先にClearメソッドを呼ぶ必要あり。）
         /// </summary>
         public static void Reload()
         {
-            Setting.Clear();
-            if (!File.Exists(Setting.SettingFilePath))
+            if (!File.Exists(Setting.SettingFilePath)|| !string.IsNullOrEmpty(Setting.ProxyServer))
             {
                 return;
             }
 
-            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(SettingInfo));
-            using (var sr = new StreamReader(Setting.SettingFilePath, new System.Text.UTF8Encoding(EMBED_BOM)))
+            try
             {
-                var i = (SettingInfo)serializer.Deserialize(sr);
-                //XMLファイルから読み込み、デシリアライズする
-                _info = i;
+                Setting.Clear();
+                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(SettingInfo));
+                using (var sr = new StreamReader(Setting.SettingFilePath, new System.Text.UTF8Encoding(EMBED_BOM)))
+                {
+                    //XMLファイルから読み込み、デシリアライズする
+                    _info = (SettingInfo)serializer.Deserialize(sr);
+                }
+
+                if (_info.Update())
+                {
+                    Setting.Save();
+                }
+                //ログ出力の設定
+                Log.WriteLevel = _info.LogLevel;
+                var directory = Path.GetDirectoryName(Setting.SettingFilePath) ?? string.Empty;
+                Log.LogFilePath = Path.Combine(directory, "relayCredentialsLog.txt");
+            }
+            catch (Exception ex)
+            {
+                Util.WriteStackTrace(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 設定値を設定ファイルに書き込む
+        /// </summary>
+        public static void Save()
+        {
+            using (var sw = new StreamWriter(Setting.SettingFilePath, false, new System.Text.UTF8Encoding(EMBED_BOM)))
+            {
+                //シリアライズして、XMLファイルに保存する
+                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(SettingInfo));
+                serializer.Serialize(sw, _info);
             }
         }
 
@@ -91,15 +135,9 @@ namespace relayCredentials
             _info.ProxyPassword = proxyPassword;
             _info.BypassList = bypassList;
 
-            using (var sw = new StreamWriter(Setting.SettingFilePath, false, new System.Text.UTF8Encoding(EMBED_BOM)))
-            {
-                //シリアライズして、XMLファイルに保存する
-                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(SettingInfo));
-                serializer.Serialize(sw, _info);
-            }
+            Setting.Save();
         }
     }//class
-
 
 
 
@@ -109,14 +147,47 @@ namespace relayCredentials
     [Serializable]
     public class SettingInfo
     {
-        //SettingInfoのフィールドを追加した場合にインクリメントする
-        public int SettingVersion { get { return 1; } }
+        /// <summary>
+        /// 設定ファイルのバージョン（SettingInfoのフィールドを追加した時にインクリメントする）
+        /// </summary>
+
+        public int SettingVersion { get; set; }
 
         public string ProxyServer { get; set; }
         public string ProxyUser { get; set; }
         public string ProxyPassword { get; set; }
+        public string EncryptedProxyPassword { get; set; }
+        public string KeyContainerName { get { return "relayCredentials"; } }
         public string[] BypassList { get; set; }
+        public Log.Level LogLevel { get; set; }
 
+        public SettingInfo()
+        {
+            SettingVersion = 2;
+            this.LogLevel = Log.Level.None;
+        }
+
+        public bool Update()
+        {
+            var updated = false;
+
+            if (this.SettingVersion == 1)
+            {
+                this.LogLevel = Log.Level.None;
+                this.SettingVersion = 2;
+                updated = true;
+            }
+
+            if (!string.IsNullOrEmpty(this.ProxyPassword) && string.IsNullOrEmpty(this.EncryptedProxyPassword))
+            {
+                var rsa = new CipherRsa(this.KeyContainerName);
+                this.EncryptedProxyPassword = rsa.Encrypt(this.ProxyPassword);
+                this.ProxyPassword = string.Empty;
+                updated = true;
+            }
+
+            return updated;
+        }
 
         /// <summary>
         /// すべての設定値をクリアする。
@@ -126,7 +197,8 @@ namespace relayCredentials
             ProxyServer = string.Empty;
             ProxyUser = string.Empty;
             ProxyPassword = string.Empty;
-            BypassList = new string[]{};
+            BypassList = new string[] { };
+            this.LogLevel = Log.Level.None;
         }
     }
 }

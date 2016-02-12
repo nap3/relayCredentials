@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using relayCredentials.Utility;
 
-//http://blogs.msdn.com/b/rido/archive/2010/05/06/how-to-connect-to-tfs-through-authenticated-web-proxy.aspx
 namespace relayCredentials
 {
     public class AuthProxyModule : IWebProxy
@@ -27,8 +27,20 @@ namespace relayCredentials
         /// </summary>
         public AuthProxyModule()
         {
-            //File.AppendAllText(Setting.LogFilePath, string.Format("コンストラクタ Setting.ProxyUser={0}\r\n", Setting.ProxyUser));
-            Credentials = new NetworkCredential(Setting.ProxyUser, Setting.ProxyPassword);
+            var fullAssemblyNmae = this.GetType().Assembly.Location;
+            var s = string.Format("Assembly={0}    Setting.ProxyUser={1}", fullAssemblyNmae, Setting.ProxyUser);
+            Log.Write(Log.Level.Full,s);
+            
+            try
+            {
+                Credentials = new NetworkCredential(Setting.ProxyUser, Setting.ProxyPassword);
+            }
+            catch (Exception ex)
+            {
+                Util.WriteStackTrace(ex);
+                throw;
+            }
+
         }
 
         /// <summary>
@@ -39,21 +51,24 @@ namespace relayCredentials
             var bypassList = Setting.ProxyBypassList;
             if (bypassList == null)
             {
+                var a = string.Format("IsBypassed={0}\tDnsSafeHost={1}\tAbsoluteUri={2}", "false", host.DnsSafeHost, host.AbsoluteUri);
+                Log.Write(Log.Level.Full, a);
                 return false;
             }
 
-            //File.AppendAllText(Setting.LogFilePath, string.Format("DnsSafeHost={0}    AbsoluteUri={1}\r\n", host.DnsSafeHost, host.AbsoluteUri));
-
+            var result = false;
             //bypassListに*.host.comのようなワイルドカード付きホスト名が含まれていた場合は未対応
             foreach (var s in bypassList)
             {
                 if (String.Equals(host.DnsSafeHost, s, StringComparison.CurrentCultureIgnoreCase))  //大文字小文字は区別しない。
                 {
-                    return true;
+                    result =  true;
                 }
             }
 
-            return false;
+            var logStr = string.Format("IsBypassed={0}\tDnsSafeHost={1}\tAbsoluteUri={2}", result, host.DnsSafeHost, host.AbsoluteUri);
+            Log.Write(Log.Level.Full, logStr);
+            return result;
         }
     }
 }
