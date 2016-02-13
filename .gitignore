@@ -1,9 +1,4 @@
 _ReSharper.relayCredentials/
 TestResults/
 
-Sample/bin/
-Sample/obj/
-relayCredentials.Test/bin/
-relayCredentials.Test/obj/
-relayCredentials/bin/
-relayCredentials/obj/
+bin/
