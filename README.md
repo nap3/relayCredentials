@@ -38,7 +38,7 @@ app.configの修正箇所
 [Excelの場合のサンプルファイルを置いています。](https://github.com/nap3/relayCredentials/blob/master/relayCredentials/Excel.exe.config)
 
 
-##confirmed
+##Confirmed
 
 App|Operation
 :--|:--:
