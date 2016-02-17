@@ -49,12 +49,14 @@ Visual Studio 2015|OK
 
 ## Licence
 
-[MIT](https://github.com/nap3/relayCredentials/blob/master/LICENSE)
+This is licensed under the MIT Licence.
+<https://github.com/nap3/relayCredentials/blob/master/LICENSE>
 
 
 ## Author
 
-[nap3](https://github.com/nap3)
+nap3,
+<https://github.com/nap3>
 
 
 ---------------------------
