@@ -46,6 +46,7 @@ Excel 2016|X
 Excel 2013|OK
 Visual Studio 2015|OK
 
+**※確認した環境があれば連絡ください。**
 
 ## Licence
 
