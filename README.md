@@ -46,16 +46,14 @@ Excel 2016|X
 Excel 2013|OK
 Visual Studio 2015|OK
 
-**※確認した環境があれば連絡ください。**
+*※確認した環境があれば連絡ください。*
 
 ## Licence
-
 This is licensed under the MIT Licence.
 <https://github.com/nap3/relayCredentials/blob/master/LICENSE>
 
 
 ## Author
-
 nap3,
 <https://github.com/nap3>
 
